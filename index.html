@@ -1,0 +1,110 @@
+<!--（以下为你完整修正后HTML源码，已省略开头）-->
+<header>
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT8Be2A17SDMoWohdOUSYtb4o6SXsW3XLeWQ&s" alt="Royale Bet Logo" />
+  <h1 style="margin: 0; font-size: 1.8rem; color: #ffcc00;">Royale Bet Tarot Draw</h1>
+</header>
+<!-- ...其余内容不变，直到最后的 <script> 标签... -->
+<script>
+  const cards = [
+    { title: "The Wheel of Luck 🎡", gameplay: "Try high-return tables and chase big payouts.", reward: "Price A", img: "https://img1.doubanio.com/view/photo/m/public/p2208623410.webp" },
+    { title: "The Watcher’s Eye 👁", gameplay: "Observe patterns and follow your instinct.", reward: "Price B", img: "https://img3.doubanio.com/view/photo/m/public/p2208623387.webp" },
+    { title: "The Tower Guardian 🛡", gameplay: "Guard one table and win after steady rounds.", reward: "Price C", img: "https://img3.doubanio.com/view/photo/m/public/p2208623412.webp" },
+    { title: "The Trickster’s Deal 🃏", gameplay: "Take a risk—anything can happen!", reward: "Price D", img: "https://img1.doubanio.com/view/photo/m/public/p2208623408.webp" },
+    { title: "The Flame of Desire 🔥", gameplay: "Go bold with deposits. Now’s the time.", reward: "Price E", img: "https://img3.doubanio.com/view/photo/m/public/p2208623413.webp" },
+    { title: "The Silent Moon 🌙", gameplay: "Play silently. Let rewards come to you.", reward: "Price F", img: "https://img9.doubanio.com/view/photo/m/public/p2208623414.webp" },
+  ];
+
+  const flippedKey = 'tarot-flipped';
+  const flipped = localStorage.getItem(flippedKey);
+  const container = document.getElementById('cardContainer');
+  const interpretations = document.getElementById('interpretations');
+
+  const shuffledIndexes = [...cards.keys()];
+  for (let i = shuffledIndexes.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledIndexes[i], shuffledIndexes[j]] = [shuffledIndexes[j], shuffledIndexes[i]];
+  }
+
+  shuffledIndexes.forEach((shuffledIdx, drawIdx) => {
+    const card = cards[shuffledIdx];
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.dataset.index = shuffledIdx;
+
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+
+    const front = document.createElement('div');
+    front.className = 'card-front';
+    const img = document.createElement('img');
+    img.src = card.img;
+    front.appendChild(img);
+
+    const back = document.createElement('div');
+    back.className = 'card-back';
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    div.appendChild(inner);
+
+    div.onclick = () => flipCard(shuffledIdx, div);
+    container.appendChild(div);
+  });
+
+  cards.forEach((card) => {
+    const interp = document.createElement('div');
+    interp.className = 'interp-card';
+    const img = document.createElement('img');
+    img.src = card.img;
+    const title = document.createElement('div');
+    title.textContent = card.title;
+    const desc = document.createElement('div');
+    desc.textContent = card.gameplay;
+    interp.appendChild(img);
+    interp.appendChild(title);
+    interp.appendChild(desc);
+    interpretations.appendChild(interp);
+  });
+
+  function flipCard(index, cardElement) {
+    if (localStorage.getItem(flippedKey)) return;
+    cardElement.classList.add('flipped');
+    const card = cards[index];
+    document.getElementById('popupTitle').textContent = card.title;
+    document.getElementById('popupGameplay').textContent = "Suggested Gameplay: " + card.gameplay;
+    document.getElementById('popupReward').textContent = "🎁 Reward: " + card.reward;
+    document.getElementById('popup').style.display = 'block';
+    localStorage.setItem(flippedKey, '1');
+    new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_6fa9621d66.mp3?filename=notification-103041.mp3').play();
+  }
+
+  function copyReward() {
+    const rewardText = document.getElementById('popupReward').textContent;
+    navigator.clipboard.writeText(rewardText);
+    const doneBtn = document.getElementById('doneBtn');
+    doneBtn.style.opacity = '1';
+    doneBtn.style.pointerEvents = 'auto';
+  }
+
+  function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+  }
+
+  function adminReset() {
+    const pwd = prompt("请输入管理员密码");
+    if (pwd === "royale2025") {
+      localStorage.removeItem(flippedKey);
+      alert("✅ 已重置翻牌权限，可重新测试！");
+    }
+  }
+
+  // 隐藏 Admin Reset，点击任意位置 5 次才显示
+  let clickCounter = 0;
+  document.body.addEventListener('click', () => {
+    clickCounter++;
+    if (clickCounter >= 5) {
+      document.querySelector('.admin-btn').style.display = 'block';
+    }
+  });
+  document.querySelector('.admin-btn').style.display = 'none';
+</script>
