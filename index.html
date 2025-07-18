@@ -2,340 +2,351 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Royale Bet Tarot Draw</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #1e1e2f, #2d2d44);
+      color: white;
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0e0e0e;
-      color: #fff;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .logo {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1rem;
+      justify-content: center;
+      margin: 15px 0;
     }
-    header img {
-      max-height: 60px;
-      margin-bottom: 1rem;
+
+    .logo img {
+      max-width: 200px;
+      height: auto;
     }
-    .admin-btn {
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-      background-color: #333;
-      color: white;
-      padding: 0.4rem 0.8rem;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      border: 1px solid #666;
-      cursor: pointer;
-      opacity: 0.5;
-    }
-    .admin-btn:hover {
-      opacity: 1;
-    }
-    .music-toggle {
-      position: fixed;
-      bottom: 1rem;
-      left: 1rem;
-      background-color: #444;
-      color: white;
-      padding: 0.4rem 0.8rem;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      border: 1px solid #666;
-      cursor: pointer;
-    }
-    .card-grid {
+
+    .card-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 1rem;
-      max-width: 1000px;
+      gap: 10px;
+      padding: 20px;
+    }
+
+    .card {
+      width: 30vw;
+      max-width: 140px;
+      height: 45vw;
+      max-height: 240px;
       perspective: 1000px;
     }
-    .card {
-      width: 100px;
-      height: 160px;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.8s ease;
-      cursor: pointer;
-    }
+
     .card-inner {
-      position: absolute;
       width: 100%;
       height: 100%;
+      transition: transform 0.8s;
       transform-style: preserve-3d;
-      transition: transform 0.8s ease;
+      position: relative;
     }
+
     .card.flipped .card-inner {
       transform: rotateY(180deg);
     }
+
     .card-front, .card-back {
       position: absolute;
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
+      background-size: cover;
+      background-position: center;
       border-radius: 10px;
     }
+
     .card-back {
       background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-VMGhrkIYAz3Rua633jI8s_zcqnP2fzYBPw&s');
-      background-size: cover;
     }
+
     .card-front {
-      background-color: #000;
       transform: rotateY(180deg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0.5rem;
     }
-    .card-front img {
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-    }
-    .popup, .popup-bg {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+
+    .modal {
       display: none;
-    }
-    .popup-bg {
-      background: rgba(0,0,0,0.6);
-      z-index: 999;
-    }
-    .popup {
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #1e1e1e;
-      padding: 0.8rem 0.8rem;
+      background: #222;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 12px #fff5;
-      z-index: 1000;
-      width: 260px;
-      height: auto;
-      max-width: 90vw;
-      font-size: 0.9rem;
       text-align: center;
+      z-index: 1000;
+      max-width: 90vw;
+      width: 320px;
     }
-    .popup h2 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.1rem;
+
+    .modal.show {
+      display: block;
     }
-    .popup p {
-      margin: 0.4rem 0;
-      line-height: 1.3;
-    }
-    .popup .warning {
+
+    .reminder {
       color: red;
-      font-weight: bold;
-      font-size: 0.85rem;
-      margin-top: 0.8rem;
+      margin: 10px 0;
+      font-size: 14px;
     }
-    .popup button {
-      margin-top: 0.8rem;
-      margin-right: 0.4rem;
-      padding: 0.3rem 0.8rem;
-      font-size: 0.9rem;
+
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
     }
-    .copy-btn {
-      background-color: #ffcc00;
+
+    .btn-copy {
+      background: red;
+      color: white;
     }
-    .done-btn {
-      background-color: #00cc88;
-      opacity: 0.5;
-      pointer-events: none;
+
+    .btn-done {
+      background: green;
+      color: white;
     }
-    .interpretations {
-      margin-top: 2rem;
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+    }
+
+    .admin-reset {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 30px;
+      height: 30px;
+      opacity: 0;
+      z-index: 1001;
+    }
+
+    .public-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 1rem;
-      width: 100%;
-      max-width: 1000px;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 15px;
+      justify-items: center;
+      padding: 20px;
     }
-    .interp-card {
-      background: #1c1c1c;
+
+    .public-card {
+      background-color: #2e2e44;
       border-radius: 10px;
-      padding: 0.6rem;
+      padding: 10px;
+      width: 110px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
-      font-size: 0.85rem;
+      box-shadow: 0 0 5px rgba(255,255,255,0.1);
+      transition: transform 0.3s;
     }
-    .interp-card img {
-      width: 60px;
-      height: auto;
+
+    .public-card:hover {
+      transform: scale(1.05);
+    }
+
+    .public-card img {
+      width: 100%;
       border-radius: 8px;
-      margin-bottom: 0.3rem;
+      object-fit: cover;
     }
-    footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
+
+    .public-card .title {
+      font-weight: bold;
+      margin-top: 5px;
+      font-size: 13px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .public-card .gameplay {
+      font-size: 12px;
+      text-align: center;
       color: #ccc;
+      margin-top: 5px;
+    }
+
+    @media screen and (max-width: 600px) {
+      .card {
+        width: 40vw;
+        height: 60vw;
+      }
+
+      .logo img {
+        max-width: 150px;
+      }
+
+      .public-card {
+        width: 95px;
+        font-size: 11px;
+      }
+
+      .modal {
+        padding: 15px;
+        width: 90vw;
+      }
+
+      .modal .reminder {
+        font-size: 13px;
+      }
+
+      .btn {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="musicToggle" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: #111; color: white; border: 1px solid #666; padding: 5px 10px; border-radius: 5px;">🔊 Music On</button>
-  <header>
-    <img src="https://royalebet.net/front/include/images/royalebet.png" alt="Royale Bet Logo" />
-  </header>
-
-  <div class="popup-bg" id="popupBg"></div>
-
-  <div class="card-grid" id="cardContainer"></div>
-
-  <div class="popup" id="popup">
-    <h2 id="popupTitle"></h2>
-    <p id="popupGameplay"></p>
-    <p id="popupReward"></p>
-    <p class="warning">Please copy the reward and send to admin</p>
-    <button class="copy-btn" onclick="copyReward()">Copy</button>
-    <button class="done-btn" onclick="closePopup()" id="doneBtn">Done</button>
+  <div class="logo">
+    <img src="https://royalebet.net/front/include/images/royalebet.png" alt="Royale Bet Logo">
   </div>
 
-  <section class="interpretations" id="interpretations"></section>
+  <h1>🔮 Tarot Card Draw</h1>
+  <div class="card-container" id="draw-section"></div>
 
-  <footer>Royale Bet Singapore © 2025</footer>
-  <button class="admin-btn" onclick="adminReset()">Admin Reset</button>
+  <h2>📜 Public Display</h2>
+  <div class="public-cards" id="public-section"></div>
 
-<script>
-  const cards = [
-    { title: "The Wheel of Luck 🎡", gameplay: "You’re on a hot streak! Fortune turns in your favor.", reward: "Price A", img: "https://i.imgur.com/yUgJX2d.png" },
-    { title: "The Fool 🃏", gameplay: "Risk it with a grin—sometimes, the unexpected hits big.", reward: "Price B", img: "https://i.imgur.com/brkc14r.png" },
-    { title: "The Tower 🛡", gameplay: "Standing firm brings unexpected rewards.", reward: "Price C", img: "https://i.imgur.com/WpwtwI9.png" },
-    { title: "The Hermit 👁", gameplay: "You sense the right moment. Patterns speak to you.", reward: "Price D", img: "https://i.imgur.com/tIMa1sG.png" },
-    { title: "The Sun🔥", gameplay: "You crave a big break — the stars might just answer.", reward: "Price E", img: "https://i.imgur.com/npss3ax.png" },
-    { title: "The Moon 🌙", gameplay: "Be still. A gift awaits the quiet one.", reward: "Price F", img: "https://i.imgur.com/DAoe2BT.png" },
-  ];
+  <div class="modal" id="rewardModal">
+    <div id="modalContent"></div>
+    <div class="reminder">Please Copy Your Reward and send to Admin</div>
+    <div class="modal-buttons">
+      <button class="btn btn-copy" onclick="copyReward()">Copy</button>
+      <button class="btn btn-done" onclick="closeModal()" disabled id="doneBtn">Done</button>
+    </div>
+  </div>
 
-  const flippedKey = 'tarot-flipped';
-  const container = document.getElementById('cardContainer');
-  const interpretations = document.getElementById('interpretations');
-  const popupBg = document.getElementById('popupBg');
-  let audio = new Audio('https://github.com/Elynnn-wc/my-music/raw/refs/heads/main/In%20The%20Rain.mp3');
-  let musicPlaying = false;
+  <div class="admin-reset" id="resetZone"></div>
+  <div class="footer">Royale Bet Singapore ®</div>
 
-  // 自动播放音乐
-  window.addEventListener('DOMContentLoaded', () => {
-    audio.loop = true;
-    audio.volume = 0.5;
-    audio.play().then(() => {
-      musicPlaying = true;
-      document.getElementById('musicToggle').textContent = '🔊 Music On';
-    }).catch(() => {
-      musicPlaying = false;
-      document.getElementById('musicToggle').textContent = '🔇 Music Off';
+  <script>
+    const cardsData = [
+      {
+        title: "The Wheel of Luck 🎡",
+        gameplay: "You’re on a hot streak! Fortune turns in your favor.",
+        reward: `🎡 1. The Wheel of Luck\n🎯 Land any bonus round (Min bet $1)?\n💸 We credit you $10 extra, up to 3x per player!\n⚡ Auto-drop — no claims needed!`,
+        img: "https://i.imgur.com/yUgJX2d.png",
+      },
+      {
+        title: "The Fool 🃏",
+        gameplay: "Risk it with a grin—sometimes, the unexpected hits big.",
+        reward: `🃏 2. The Fool\n💥 Your next deposit gets a +30% bonus boost\nNo codes, no hassle — just reload and enjoy.`,
+        img: "https://i.imgur.com/brkc14r.png",
+      },
+      {
+        title: "The Tower 🛡",
+        gameplay: "Standing firm brings unexpected rewards.",
+        reward: `🛡️ 3. The Tower\n🎰 Play any single slot 100+ spins (any bet)\n💰 We send you $18.88 Lucky Angpao, guaranteed!\n📌 Just play — we track it for you.`,
+        img: "https://i.imgur.com/WpwtwI9.png",
+      },
+      {
+        title: "The Hermit 👁",
+        gameplay: "You sense the right moment. Patterns speak to you.",
+        reward: `👁️ 4. The Hermit\n💸 Deposit $20 or more to unlock a Random Credit Drop\n🎁 Mystery Angpao between $5 – $88\nSurprise included. Tricks excluded.`,
+        img: "https://i.imgur.com/tIMa1sG.png",
+      },
+      {
+        title: "The Sun🔥",
+        gameplay: "You crave a big break — the stars might just answer.",
+        reward: `🔥 5. The Sun\n🔥 Combo Deposits = Super Top-Up:\n$20 ➜ $28\n$50 ➜ $68\n$100 ➜ $138\n$200 ➜ $258\n$300 ➜ $368\n🚀 Power-up your play, no limits.`,
+        img: "https://i.imgur.com/npss3ax.png",
+      },
+      {
+        title: "The Moon 🌙",
+        gameplay: "Be still. A gift awaits the quiet one.",
+        reward: `🌙 6. The Moon\n✨ First-timer? We got you.\n🎁 Claim FREE $13.88 Credit — no deposit needed.\n(One-time gift. Just say hi.)`,
+        img: "https://i.imgur.com/DAoe2BT.png",
+      },
+    ];
+
+    const drawSection = document.getElementById('draw-section');
+    const publicSection = document.getElementById('public-section');
+    const rewardModal = document.getElementById('rewardModal');
+    const modalContent = document.getElementById('modalContent');
+    const doneBtn = document.getElementById('doneBtn');
+    let hasDrawn = sessionStorage.getItem('hasDrawn');
+    let resetClicks = 0;
+
+    // 渲染公共展示区
+    cardsData.forEach(card => {
+      const publicCard = document.createElement('div');
+      publicCard.className = 'public-card';
+      publicCard.innerHTML = `
+        <img src="${card.img}" alt="${card.title}" />
+        <div class="title">${card.title}</div>
+        <div class="gameplay">${card.gameplay}</div>
+      `;
+      publicSection.appendChild(publicCard);
     });
-  });
 
-  document.getElementById('musicToggle').onclick = () => {
-    if (musicPlaying) {
-      audio.pause();
-      musicPlaying = false;
-      document.getElementById('musicToggle').textContent = '🔇 Music Off';
-    } else {
-      audio.play();
-      musicPlaying = true;
-      document.getElementById('musicToggle').textContent = '🔊 Music On';
-    }
-  };
-
-  const shuffledIndexes = [...cards.keys()].sort(() => Math.random() - 0.5);
-
-  shuffledIndexes.forEach((shuffledIdx) => {
-    const card = cards[shuffledIdx];
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.dataset.index = shuffledIdx;
-
-    const inner = document.createElement('div');
-    inner.className = 'card-inner';
-
-    const front = document.createElement('div');
-    front.className = 'card-front';
-    const img = document.createElement('img');
-    img.src = card.img;
-    front.appendChild(img);
-
-    const back = document.createElement('div');
-    back.className = 'card-back';
-
-    inner.appendChild(front);
-    inner.appendChild(back);
-    div.appendChild(inner);
-
-    div.onclick = () => flipCard(shuffledIdx, div);
-    container.appendChild(div);
-  });
-
-  cards.forEach((card) => {
-    const interp = document.createElement('div');
-    interp.className = 'interp-card';
-    const img = document.createElement('img');
-    img.src = card.img;
-    const title = document.createElement('div');
-    title.textContent = card.title;
-    const desc = document.createElement('div');
-    desc.textContent = card.gameplay;
-    interp.appendChild(img);
-    interp.appendChild(title);
-    interp.appendChild(desc);
-    interpretations.appendChild(interp);
-  });
-
-  function flipCard(index, cardElement) {
-    if (localStorage.getItem(flippedKey)) return;
-    const card = cards[index];
-    localStorage.setItem(flippedKey, '1');
-
-    // 添加多圈旋转动画（临时 class），延迟 3 秒显示弹窗
-    const inner = cardElement.querySelector('.card-inner');
-    inner.style.transition = 'transform 3s ease';
-    cardElement.classList.add('flipped');
-
-    setTimeout(() => {
-      document.getElementById('popupTitle').textContent = card.title;
-      document.getElementById('popupGameplay').textContent = "Suggested Gameplay: " + card.gameplay;
-      document.getElementById('popupReward').textContent = "🎁 Reward: " + card.reward;
-      document.getElementById('popup').style.display = 'block';
-      popupBg.style.display = 'block';
-    }, 3000);
-  }
-
-  function copyReward() {
-    const rewardText = document.getElementById('popupReward').textContent;
-    navigator.clipboard.writeText(rewardText).then(() => {
-      alert("🎉 Reward copied to clipboard!");
-      const doneBtn = document.getElementById('doneBtn');
-      doneBtn.style.opacity = '1';
-      doneBtn.style.pointerEvents = 'auto';
-    }).catch(() => {
-      alert("❌ Copy failed. Please copy manually.");
+    // 渲染抽牌区（随机排序）
+    const shuffled = [...cardsData].sort(() => Math.random() - 0.5);
+    shuffled.forEach((card) => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card';
+      cardEl.innerHTML = `
+        <div class="card-inner">
+          <div class="card-back"></div>
+          <div class="card-front" style="background-image: url('${card.img}')"></div>
+        </div>
+      `;
+      cardEl.onclick = () => {
+        if (sessionStorage.getItem('hasDrawn')) return alert("You already drew a card!");
+        cardEl.classList.add('flipped');
+        sessionStorage.setItem('hasDrawn', 'true');
+        setTimeout(() => {
+          showReward(card.reward);
+        }, 1500);
+      };
+      drawSection.appendChild(cardEl);
     });
-  }
 
-  function closePopup() {
-    document.getElementById('popup').style.display = 'none';
-    popupBg.style.display = 'none';
-  }
-
-  function adminReset() {
-    const pwd = prompt("请输入管理员密码");
-    if (pwd === "royale2025") {
-      localStorage.removeItem(flippedKey);
-      alert("✅ 已重置翻牌权限，可重新测试！");
+    function showReward(content) {
+      modalContent.innerText = content;
+      rewardModal.classList.add('show');
+      doneBtn.disabled = true;
     }
-  }
-</script>
+
+    function copyReward() {
+      navigator.clipboard.writeText(modalContent.innerText).then(() => {
+        alert("Copied!");
+        doneBtn.disabled = false;
+      });
+    }
+
+    function closeModal() {
+      rewardModal.classList.remove('show');
+    }
+
+    document.getElementById('resetZone').addEventListener('click', () => {
+      resetClicks++;
+      if (resetClicks >= 5) {
+        sessionStorage.removeItem('hasDrawn');
+        alert('Draw reset successfully!');
+        location.reload();
+      }
+    });
+  </script>
 </body>
 </html>
