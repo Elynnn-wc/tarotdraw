@@ -1,205 +1,179 @@
-<style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #1e1e2f, #2d2d44);
-      color: white;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  overflow-x: hidden;
+}
 
-    h1, h2 {
-      text-align: center;
-      margin: 10px 0;
-    }
+.logo img {
+  width: 180px;
+  margin: 20px auto;
+  display: block;
+}
 
-    .logo {
-      display: flex;
-      justify-content: center;
-      margin: 15px 0;
-    }
+h1, h2 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #ffd700;
+}
 
-    .logo img {
-      max-width: 200px;
-      height: auto;
-    }
+.card-container {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px;
+  justify-content: flex-start;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
 
-    .card-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      padding: 20px;
-    }
+.card {
+  width: 150px;
+  height: 220px;
+  margin: 0 8px;
+  perspective: 1000px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
 
-    .card {
-      width: 45%;
-      max-width: 140px;
-      aspect-ratio: 2 / 3;
-      perspective: 1000px;
-    }
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1.2s;
+}
 
-    .card-inner {
-      width: 100%;
-      height: 100%;
-      transition: transform 0.8s;
-      transform-style: preserve-3d;
-      position: relative;
-    }
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
 
-    .card.flipped .card-inner {
-      transform: rotateY(180deg);
-    }
+.card-back, .card-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
 
-    .card-front, .card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      background-size: cover;
-      background-position: center;
-      border-radius: 10px;
-    }
+.card-back {
+  background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-VMGhrkIYAz3Rua633jI8s_zcqnP2fzYBPw&s') no-repeat center center;
+  background-size: cover;
+}
 
-    .card-back {
-      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-VMGhrkIYAz3Rua633jI8s_zcqnP2fzYBPw&s');
-    }
+.card-front {
+  background-size: cover;
+  background-position: center;
+  transform: rotateY(180deg);
+}
 
-    .card-front {
-      transform: rotateY(180deg);
-    }
+.public-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
 
-    .modal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      z-index: 1000;
-      max-width: 90vw;
-      width: 320px;
-    }
+.public-card {
+  background: #222;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.1);
+}
 
-    .modal.show {
-      display: block;
-    }
+.public-card img {
+  width: 100%;
+  border-radius: 8px;
+}
 
-    .reminder {
-      color: red;
-      margin: 10px 0;
-      font-size: 14px;
-    }
+.public-card .title {
+  font-weight: bold;
+  margin-top: 6px;
+  font-size: 15px;
+  color: #ffc107;
+}
 
-    .modal-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 10px;
-    }
+.public-card .gameplay {
+  font-size: 13px;
+  color: #ddd;
+  margin-top: 4px;
+}
 
-    .btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: #222;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+  max-width: 90%;
+  width: 360px;
+  z-index: 9999;
+  transition: transform 0.3s ease-in-out;
+}
 
-    .btn-copy {
-      background: red;
-      color: white;
-    }
+.modal.show {
+  transform: translate(-50%, -50%) scale(1);
+}
 
-    .btn-done {
-      background: green;
-      color: white;
-    }
+#modalContent {
+  white-space: pre-line;
+  text-align: left;
+  color: #fff;
+  margin-bottom: 12px;
+}
 
-    .footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 14px;
-    }
+.reminder {
+  font-size: 13px;
+  color: red;
+  margin-bottom: 8px;
+}
 
-    .admin-reset {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 30px;
-      height: 30px;
-      opacity: 0;
-      z-index: 1001;
-    }
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
 
-    .public-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 15px;
-      justify-items: center;
-      padding: 20px;
-    }
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .public-card {
-      background-color: #2e2e44;
-      border-radius: 10px;
-      padding: 10px;
-      width: 110px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 0 5px rgba(255,255,255,0.1);
-      transition: transform 0.3s;
-    }
+.btn-copy {
+  background-color: #4caf50;
+  color: white;
+}
 
-    .public-card:hover {
-      transform: scale(1.05);
-    }
+.btn-done {
+  background-color: #555;
+  color: white;
+}
 
-    .public-card img {
-      width: 100%;
-      border-radius: 8px;
-      object-fit: cover;
-    }
+.btn-done:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-    .public-card .title {
-      font-weight: bold;
-      margin-top: 5px;
-      font-size: 13px;
-      text-align: center;
-      color: #fff;
-    }
+.admin-reset {
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+  width: 40px;
+  height: 40px;
+  opacity: 0;
+}
 
-    .public-card .gameplay {
-      font-size: 12px;
-      text-align: center;
-      color: #ccc;
-      margin-top: 5px;
-    }
-
-    @media screen and (max-width: 480px) {
-      .card {
-        width: 90%;
-      }
-
-      .logo img {
-        max-width: 150px;
-      }
-
-      .modal {
-        padding: 15px;
-        width: 90vw;
-      }
-
-      .modal .reminder {
-        font-size: 13px;
-      }
-
-      .btn {
-        font-size: 14px;
-      }
-    }
-  </style>
+.footer {
+  margin-top: 40px;
+  padding-bottom: 30px;
+  font-size: 14px;
+  color: #aaa;
+}
