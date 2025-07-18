@@ -1,31 +1,258 @@
-<!--（以下为你完整修正后HTML源码，已省略开头）-->
-<header>
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT8Be2A17SDMoWohdOUSYtb4o6SXsW3XLeWQ&s" alt="Royale Bet Logo" />
-  <h1 style="margin: 0; font-size: 1.8rem; color: #ffcc00;">Royale Bet Tarot Draw</h1>
-</header>
-<!-- ...其余内容不变，直到最后的 <script> 标签... -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Royale Bet Tarot Draw</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0e0e0e;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+    header img {
+      max-height: 60px;
+      margin-bottom: 1rem;
+    }
+    .admin-btn {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background-color: #333;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      border: 1px solid #666;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+    .admin-btn:hover {
+      opacity: 1;
+    }
+    .music-toggle {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      background-color: #444;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      border: 1px solid #666;
+      cursor: pointer;
+    }
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      max-width: 1000px;
+      perspective: 1000px;
+    }
+    .card {
+      width: 100px;
+      height: 160px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s ease;
+      cursor: pointer;
+    }
+    .card-inner {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.8s ease;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+    }
+    .card-back {
+      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-VMGhrkIYAz3Rua633jI8s_zcqnP2fzYBPw&s');
+      background-size: cover;
+    }
+    .card-front {
+      background-color: #000;
+      transform: rotateY(180deg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem;
+    }
+    .card-front img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+    .popup, .popup-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;
+    }
+    .popup-bg {
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
+    }
+    .popup {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1e1e1e;
+      padding: 0.8rem 0.8rem;
+      border-radius: 10px;
+      box-shadow: 0 0 12px #fff5;
+      z-index: 1000;
+      width: 260px;
+      height: auto;
+      max-width: 90vw;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .popup h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    .popup p {
+      margin: 0.4rem 0;
+      line-height: 1.3;
+    }
+    .popup .warning {
+      color: red;
+      font-weight: bold;
+      font-size: 0.85rem;
+      margin-top: 0.8rem;
+    }
+    .popup button {
+      margin-top: 0.8rem;
+      margin-right: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .copy-btn {
+      background-color: #ffcc00;
+    }
+    .done-btn {
+      background-color: #00cc88;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .interpretations {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 1000px;
+    }
+    .interp-card {
+      background: #1c1c1c;
+      border-radius: 10px;
+      padding: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+    .interp-card img {
+      width: 60px;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 0.3rem;
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <button id="musicToggle" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: #111; color: white; border: 1px solid #666; padding: 5px 10px; border-radius: 5px;">🔊 Music On</button>
+  <header>
+    <img src="https://royalebet.net/front/include/images/royalebet.png" alt="Royale Bet Logo" />
+  </header>
+
+  <div class="popup-bg" id="popupBg"></div>
+
+  <div class="card-grid" id="cardContainer"></div>
+
+  <div class="popup" id="popup">
+    <h2 id="popupTitle"></h2>
+    <p id="popupGameplay"></p>
+    <p id="popupReward"></p>
+    <p class="warning">Please copy the reward and send to admin</p>
+    <button class="copy-btn" onclick="copyReward()">Copy</button>
+    <button class="done-btn" onclick="closePopup()" id="doneBtn">Done</button>
+  </div>
+
+  <section class="interpretations" id="interpretations"></section>
+
+  <footer>Royale Bet Singapore © 2025</footer>
+  <button class="admin-btn" onclick="adminReset()">Admin Reset</button>
+
 <script>
   const cards = [
-    { title: "The Wheel of Luck 🎡", gameplay: "Try high-return tables and chase big payouts.", reward: "Price A", img: "https://img1.doubanio.com/view/photo/m/public/p2208623410.webp" },
-    { title: "The Watcher’s Eye 👁", gameplay: "Observe patterns and follow your instinct.", reward: "Price B", img: "https://img3.doubanio.com/view/photo/m/public/p2208623387.webp" },
-    { title: "The Tower Guardian 🛡", gameplay: "Guard one table and win after steady rounds.", reward: "Price C", img: "https://img3.doubanio.com/view/photo/m/public/p2208623412.webp" },
-    { title: "The Trickster’s Deal 🃏", gameplay: "Take a risk—anything can happen!", reward: "Price D", img: "https://img1.doubanio.com/view/photo/m/public/p2208623408.webp" },
-    { title: "The Flame of Desire 🔥", gameplay: "Go bold with deposits. Now’s the time.", reward: "Price E", img: "https://img3.doubanio.com/view/photo/m/public/p2208623413.webp" },
-    { title: "The Silent Moon 🌙", gameplay: "Play silently. Let rewards come to you.", reward: "Price F", img: "https://img9.doubanio.com/view/photo/m/public/p2208623414.webp" },
+    { title: "The Wheel of Luck 🎡", gameplay: "You’re on a hot streak! Fortune turns in your favor.", reward: "Price A", img: "https://img9.doubanio.com/view/photo/m/public/p2208623185.webp" },
+    { title: "The Fool 🃏", gameplay: "Risk it with a grin—sometimes, the unexpected hits big.", reward: "Price B", img: "https://img2.doubanio.com/view/photo/m/public/p2208623201.webp" },
+    { title: "The Tower 🛡", gameplay: "Standing firm brings unexpected rewards.", reward: "Price C", img: "https://img9.doubanio.com/view/photo/l/public/p2208623216.webp" },
+    { title: "The Hermit 👁", gameplay: "You sense the right moment. Patterns speak to you.", reward: "Price D", img: "https://img9.doubanio.com/view/photo/m/public/p2208623186.webp" },
+    { title: "The Sun🔥", gameplay: "You crave a big break — the stars might just answer.", reward: "Price E", img: "https://img3.doubanio.com/view/photo/m/public/p2208623413.webp" },
+    { title: "The Moon 🌙", gameplay: "Be still. A gift awaits the quiet one.", reward: "Price F", img: "https://img9.doubanio.com/view/photo/m/public/p2208623414.webp" },
   ];
 
   const flippedKey = 'tarot-flipped';
-  const flipped = localStorage.getItem(flippedKey);
   const container = document.getElementById('cardContainer');
   const interpretations = document.getElementById('interpretations');
+  const popupBg = document.getElementById('popupBg');
+  let audio = new Audio('https://github.com/Elynnn-wc/my-music/raw/refs/heads/main/In%20The%20Rain.mp3');
+  let musicPlaying = false;
 
-  const shuffledIndexes = [...cards.keys()];
-  for (let i = shuffledIndexes.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledIndexes[i], shuffledIndexes[j]] = [shuffledIndexes[j], shuffledIndexes[i]];
-  }
+  // 自动播放音乐
+  window.addEventListener('DOMContentLoaded', () => {
+    audio.loop = true;
+    audio.volume = 0.5;
+    audio.play().then(() => {
+      musicPlaying = true;
+      document.getElementById('musicToggle').textContent = '🔊 Music On';
+    }).catch(() => {
+      musicPlaying = false;
+      document.getElementById('musicToggle').textContent = '🔇 Music Off';
+    });
+  });
 
-  shuffledIndexes.forEach((shuffledIdx, drawIdx) => {
+  document.getElementById('musicToggle').onclick = () => {
+    if (musicPlaying) {
+      audio.pause();
+      musicPlaying = false;
+      document.getElementById('musicToggle').textContent = '🔇 Music Off';
+    } else {
+      audio.play();
+      musicPlaying = true;
+      document.getElementById('musicToggle').textContent = '🔊 Music On';
+    }
+  };
+
+  const shuffledIndexes = [...cards.keys()].sort(() => Math.random() - 0.5);
+
+  shuffledIndexes.forEach((shuffledIdx) => {
     const card = cards[shuffledIdx];
     const div = document.createElement('div');
     div.className = 'card';
@@ -68,26 +295,38 @@
 
   function flipCard(index, cardElement) {
     if (localStorage.getItem(flippedKey)) return;
-    cardElement.classList.add('flipped');
     const card = cards[index];
-    document.getElementById('popupTitle').textContent = card.title;
-    document.getElementById('popupGameplay').textContent = "Suggested Gameplay: " + card.gameplay;
-    document.getElementById('popupReward').textContent = "🎁 Reward: " + card.reward;
-    document.getElementById('popup').style.display = 'block';
     localStorage.setItem(flippedKey, '1');
-    new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_6fa9621d66.mp3?filename=notification-103041.mp3').play();
+
+    // 添加多圈旋转动画（临时 class），延迟 3 秒显示弹窗
+    const inner = cardElement.querySelector('.card-inner');
+    inner.style.transition = 'transform 3s ease';
+    cardElement.classList.add('flipped');
+
+    setTimeout(() => {
+      document.getElementById('popupTitle').textContent = card.title;
+      document.getElementById('popupGameplay').textContent = "Suggested Gameplay: " + card.gameplay;
+      document.getElementById('popupReward').textContent = "🎁 Reward: " + card.reward;
+      document.getElementById('popup').style.display = 'block';
+      popupBg.style.display = 'block';
+    }, 3000);
   }
 
   function copyReward() {
     const rewardText = document.getElementById('popupReward').textContent;
-    navigator.clipboard.writeText(rewardText);
-    const doneBtn = document.getElementById('doneBtn');
-    doneBtn.style.opacity = '1';
-    doneBtn.style.pointerEvents = 'auto';
+    navigator.clipboard.writeText(rewardText).then(() => {
+      alert("🎉 Reward copied to clipboard!");
+      const doneBtn = document.getElementById('doneBtn');
+      doneBtn.style.opacity = '1';
+      doneBtn.style.pointerEvents = 'auto';
+    }).catch(() => {
+      alert("❌ Copy failed. Please copy manually.");
+    });
   }
 
   function closePopup() {
     document.getElementById('popup').style.display = 'none';
+    popupBg.style.display = 'none';
   }
 
   function adminReset() {
@@ -97,14 +336,6 @@
       alert("✅ 已重置翻牌权限，可重新测试！");
     }
   }
-
-  // 隐藏 Admin Reset，点击任意位置 5 次才显示
-  let clickCounter = 0;
-  document.body.addEventListener('click', () => {
-    clickCounter++;
-    if (clickCounter >= 5) {
-      document.querySelector('.admin-btn').style.display = 'block';
-    }
-  });
-  document.querySelector('.admin-btn').style.display = 'none';
 </script>
+</body>
+</html>
