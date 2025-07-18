@@ -23,7 +23,7 @@ h1, h2 {
 .card-container {
   display: flex;
   overflow-x: auto;
-  padding: 10px;
+  padding: 50px;
   justify-content: flex-start;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -31,7 +31,7 @@ h1, h2 {
 
 .card {
   width: 150px;
-  height: 220px;
+  height: 260px;
   margin: 0 8px;
   perspective: 1000px;
   flex: 0 0 auto;
