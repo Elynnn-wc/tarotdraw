@@ -60,6 +60,8 @@ cardsData.forEach(card => {
 const shuffled = [...cardsData].sort(() => Math.random() - 0.5);
 
 // 抽奖卡
+let lastSelected = null;
+
 shuffled.forEach((card) => {
   const cardEl = document.createElement('div');
   cardEl.className = 'card';
@@ -76,13 +78,25 @@ shuffled.forEach((card) => {
       return;
     }
 
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-    cardEl.classList.add('selected', 'flipped');
-    sessionStorage.setItem('hasDrawn', 'true');
+    const isSelected = cardEl.classList.contains('selected');
 
-    setTimeout(() => {
-      showReward(card.reward);
-    }, 1500);
+    if (isSelected && lastSelected === cardEl) {
+      // 第二次点击相同卡片 → 翻转
+      cardEl.classList.add('flipped');
+      sessionStorage.setItem('hasDrawn', 'true');
+      setTimeout(() => {
+        showReward(card.reward);
+      }, 1500);
+    } else {
+      // 清除其他卡的选中状态
+      document.querySelectorAll('.card').forEach(c => {
+        c.classList.remove('selected');
+      });
+
+      // 设置当前卡片为选中
+      cardEl.classList.add('selected');
+      lastSelected = cardEl;
+    }
   });
 
   drawSection.appendChild(cardEl);
