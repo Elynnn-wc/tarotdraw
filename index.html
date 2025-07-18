@@ -7,29 +7,38 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- Logo -->
   <div class="logo">
     <img src="https://royalebet.net/front/include/images/royalebet.png" alt="Royale Bet Logo">
   </div>
 
+  <!-- 抽卡区标题与提示 -->
   <h2>🎴 Swipe & Draw Your Fortune 🎴</h2>
   <p class="scroll-hint">➡️ Swipe left/right to choose your fortune</p>
   <div id="draw-section" class="card-container"></div>
 
+  <!-- 公示区 -->
   <h2>📜 Public Display</h2>
   <div class="public-cards" id="public-section"></div>
 
+  <!-- 奖励弹窗 Modal -->
   <div class="modal" id="rewardModal">
     <div id="modalContent"></div>
-    <div class="reminder">Please Copy Your Reward and send to Admin</div>
+    <div class="reminder" id="modalWarning">⚠️ Please copy the reward before clicking Done.<br>Send It To Admin</div>
     <div class="modal-buttons">
       <button class="btn btn-copy" onclick="copyReward()">Copy</button>
       <button class="btn btn-done" onclick="closeModal()" disabled id="doneBtn">Done</button>
     </div>
   </div>
 
+  <!-- 隐藏重置区（点 5 次） -->
   <div class="admin-reset" id="resetZone"></div>
+
+  <!-- 页脚 -->
   <div class="footer">Royale Bet Singapore ®</div>
 
+  <!-- 主脚本 -->
   <script src="main.js"></script>
 </body>
 </html>
