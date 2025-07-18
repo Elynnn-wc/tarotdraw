@@ -1,132 +1,104 @@
-const cards = [
+const cardsData = [
   {
     title: "The Wheel of Luck 🎡",
-    meaning: "You’re on a hot streak! Fortune turns in your favor.",
-    image: "images/card1.png",
-    reward: "Prize A"
+    gameplay: "You’re on a hot streak! Fortune turns in your favor.",
+    reward: `🎡 1. The Wheel of Luck\n🎯 Land any bonus round (Min bet $1)?\n💸 We credit you $10 extra, up to 3x per player!\n⚡ Auto-drop — no claims needed!`,
+    img: "https://i.imgur.com/yUgJX2d.png",
   },
   {
-    title: "The Watcher’s Eye 👁",
-    meaning: "You sense the right moment. Patterns speak to you.",
-    image: "images/card2.png",
-    reward: "Prize B"
+    title: "The Fool 🃏",
+    gameplay: "Risk it with a grin—sometimes, the unexpected hits big.",
+    reward: `🃏 2. The Fool\n💥 Your next deposit gets a +30% bonus boost\nNo codes, no hassle — just reload and enjoy.`,
+    img: "https://i.imgur.com/brkc14r.png",
   },
   {
-    title: "The Tower Guardian 🛡",
-    meaning: "Standing firm brings unexpected rewards.",
-    image: "images/card3.png",
-    reward: "Prize C"
+    title: "The Tower 🛡",
+    gameplay: "Standing firm brings unexpected rewards.",
+    reward: `🛡️ 3. The Tower\n🎰 Play any single slot 100+ spins (any bet)\n💰 We send you $18.88 Lucky Angpao, guaranteed!\n📌 Just play — we track it for you.`,
+    img: "https://i.imgur.com/WpwtwI9.png",
   },
   {
-    title: "The Trickster’s Deal 🃏",
-    meaning: "Risk it with a grin—sometimes, the unexpected hits big.",
-    image: "images/card4.png",
-    reward: "Prize D"
+    title: "The Hermit 👁",
+    gameplay: "You sense the right moment. Patterns speak to you.",
+    reward: `👁️ 4. The Hermit\n💸 Deposit $20 or more to unlock a Random Credit Drop\n🎁 Mystery Angpao between $5 – $88\nSurprise included. Tricks excluded.`,
+    img: "https://i.imgur.com/tIMa1sG.png",
   },
   {
-    title: "The Flame of Desire 🔥",
-    meaning: "You crave a big break — the stars might just answer.",
-    image: "images/card5.png",
-    reward: "Prize E"
+    title: "The Sun🔥",
+    gameplay: "You crave a big break — the stars might just answer.",
+    reward: `🔥 5. The Sun\n🔥 Combo Deposits = Super Top-Up:\n$20 ➜ $28\n$50 ➜ $68\n$100 ➜ $138\n$200 ➜ $258\n$300 ➜ $368\n🚀 Power-up your play, no limits.`,
+    img: "https://i.imgur.com/npss3ax.png",
   },
   {
-    title: "The Silent Moon 🌙",
-    meaning: "Be still. A gift awaits the quiet one.",
-    image: "images/card6.png",
-    reward: "Prize F"
-  }
+    title: "The Moon 🌙",
+    gameplay: "Be still. A gift awaits the quiet one.",
+    reward: `🌙 6. The Moon\n✨ First-timer? We got you.\n🎁 Claim FREE $13.88 Credit — no deposit needed.\n(One-time gift. Just say hi.)`,
+    img: "https://i.imgur.com/DAoe2BT.png",
+  },
 ];
 
-let hasDrawn = false;
-let copyAllowed = false;
-let resetCount = 0;
+const drawSection = document.getElementById('draw-section');
+const publicSection = document.getElementById('public-section');
+const rewardModal = document.getElementById('rewardModal');
+const modalContent = document.getElementById('modalContent');
+const doneBtn = document.getElementById('doneBtn');
+let hasDrawn = sessionStorage.getItem('hasDrawn');
+let resetClicks = 0;
 
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
+cardsData.forEach(card => {
+  const publicCard = document.createElement('div');
+  publicCard.className = 'public-card';
+  publicCard.innerHTML = `
+    <img src="${card.img}" alt="${card.title}" />
+    <div class="title">${card.title}</div>
+    <div class="gameplay">${card.gameplay}</div>
+  `;
+  publicSection.appendChild(publicCard);
+});
 
-function createCard(card, index) {
-  const cardEl = document.createElement("div");
-  cardEl.className = "card";
-  cardEl.dataset.index = index;
-
+const shuffled = [...cardsData].sort(() => Math.random() - 0.5);
+shuffled.forEach((card) => {
+  const cardEl = document.createElement('div');
+  cardEl.className = 'card';
   cardEl.innerHTML = `
     <div class="card-inner">
-      <div class="card-front" style="background-image: url('${card.image}')"></div>
       <div class="card-back"></div>
+      <div class="card-front" style="background-image: url('${card.img}')"></div>
     </div>
   `;
-
-  cardEl.addEventListener("click", () => {
-    if (hasDrawn) return;
-    hasDrawn = true;
-    cardEl.classList.add("flipped");
-
+  cardEl.onclick = () => {
+    if (sessionStorage.getItem('hasDrawn')) return alert("You already drew a card!");
+    cardEl.classList.add('flipped');
+    sessionStorage.setItem('hasDrawn', 'true');
     setTimeout(() => {
-      showModal(card.reward);
-    }, 3000); // delay after flip
-  });
+      showReward(card.reward);
+    }, 1500);
+  };
+  drawSection.appendChild(cardEl);
+});
 
-  return cardEl;
-}
-
-function showModal(rewardText) {
-  const modal = document.getElementById("rewardModal");
-  const content = document.getElementById("modalContent");
-  const doneBtn = document.getElementById("doneBtn");
-
-  content.textContent = `Your Reward:\n${rewardText}`;
-  modal.classList.add("show");
+function showReward(content) {
+  modalContent.innerText = content;
+  rewardModal.classList.add('show');
   doneBtn.disabled = true;
-  copyAllowed = false;
-}
-
-function closeModal() {
-  if (!copyAllowed) return;
-  document.getElementById("rewardModal").classList.remove("show");
 }
 
 function copyReward() {
-  const text = document.getElementById("modalContent").textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    copyAllowed = true;
-    document.getElementById("doneBtn").disabled = false;
+  navigator.clipboard.writeText(modalContent.innerText).then(() => {
+    alert("Copied!");
+    doneBtn.disabled = false;
   });
 }
 
-function renderDrawSection() {
-  const drawContainer = document.getElementById("draw-section");
-  const shuffled = shuffle([...cards]);
-  shuffled.forEach((card, i) => {
-    drawContainer.appendChild(createCard(card, i));
-  });
+function closeModal() {
+  rewardModal.classList.remove('show');
 }
 
-function renderPublicCards() {
-  const publicContainer = document.getElementById("public-section");
-  cards.forEach((card) => {
-    const el = document.createElement("div");
-    el.className = "public-card";
-    el.innerHTML = `
-      <img src="${card.image}" alt="${card.title}">
-      <div class="title">${card.title}</div>
-      <div class="gameplay">${card.meaning}</div>
-    `;
-    publicContainer.appendChild(el);
-  });
-}
-
-// Admin reset logic
-document.getElementById("resetZone").addEventListener("click", () => {
-  resetCount++;
-  if (resetCount >= 5) {
-    const pwd = prompt("Enter admin password:");
-    if (pwd === "royale2025") {
-      location.reload();
-    }
-    resetCount = 0;
+document.getElementById('resetZone').addEventListener('click', () => {
+  resetClicks++;
+  if (resetClicks >= 5) {
+    sessionStorage.removeItem('hasDrawn');
+    alert('Draw reset successfully!');
+    location.reload();
   }
 });
-
-renderDrawSection();
-renderPublicCards();
