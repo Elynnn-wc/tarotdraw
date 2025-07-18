@@ -37,6 +37,14 @@ h1, h2 {
   flex: 0 0 auto;
   scroll-snap-align: start;
 }
+.card:hover:not(.flipped) {
+  transform: scale(1.15);
+  z-index: 2;
+}
+.card.selected {
+  transform: scale(1.3);
+  z-index: 3;
+}
 
 .card-inner {
   width: 100%;
