@@ -44,7 +44,7 @@ const modalContent = document.getElementById('modalContent');
 const doneBtn = document.getElementById('doneBtn');
 let resetClicks = 0;
 
-// 生成公开区卡牌展示
+// 显示公开区
 cardsData.forEach(card => {
   const publicCard = document.createElement('div');
   publicCard.className = 'public-card';
@@ -56,10 +56,10 @@ cardsData.forEach(card => {
   publicSection.appendChild(publicCard);
 });
 
-// 洗牌
+// 随机洗牌
 const shuffled = [...cardsData].sort(() => Math.random() - 0.5);
 
-// 渲染抽奖卡牌
+// 抽奖卡
 shuffled.forEach((card) => {
   const cardEl = document.createElement('div');
   cardEl.className = 'card';
@@ -76,14 +76,10 @@ shuffled.forEach((card) => {
       return;
     }
 
-    // 清除所有卡的选中样式
     document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-
-    // 添加选中样式并翻牌
     cardEl.classList.add('selected', 'flipped');
     sessionStorage.setItem('hasDrawn', 'true');
 
-    // 延迟展示奖励弹窗
     setTimeout(() => {
       showReward(card.reward);
     }, 1500);
@@ -92,14 +88,12 @@ shuffled.forEach((card) => {
   drawSection.appendChild(cardEl);
 });
 
-// 显示奖励弹窗
 function showReward(content) {
   modalContent.innerText = content;
   rewardModal.classList.add('show');
   doneBtn.disabled = true;
 }
 
-// 复制奖励内容
 function copyReward() {
   navigator.clipboard.writeText(modalContent.innerText).then(() => {
     alert("Copied!");
@@ -107,12 +101,10 @@ function copyReward() {
   });
 }
 
-// 关闭弹窗
 function closeModal() {
   rewardModal.classList.remove('show');
 }
 
-// 重置机制
 document.getElementById('resetZone').addEventListener('click', () => {
   resetClicks++;
   if (resetClicks >= 5) {
