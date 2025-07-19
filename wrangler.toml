@@ -1,4 +1,0 @@
-name = "tarot-draw"
-compatibility_date = "2025-07-19"
-
-main = "main.js"
