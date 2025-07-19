@@ -1,4 +1,4 @@
 name = "tarot-draw"
 compatibility_date = "2025-07-19"
 
-main = "src/index.ts"
+main = "main.js"
