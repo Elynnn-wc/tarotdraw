@@ -1,0 +1,5 @@
+name = "rybtarotnight"
+compatibility_date = "2025-07-19"
+
+[site]
+bucket = "./public"
